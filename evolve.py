@@ -20,13 +20,6 @@ def write_deck(path, deck):
     with open(path, 'w') as f:
         f.write('\n'.join(map(lambda x: "1 " + x, deck)))
 
-def duel_decks(deck1, deck2):
-    write_deck("first.dec", deck1)
-    write_deck("second.dec", deck2)
-    awins, bwins = subprocess.check_output(["sh", "duel.sh", "first.dec", "second.dec"]).decode('utf-8').split('\n')[-2].split('\t')[-2:]
-
-    return int(awins) > int(bwins)
-
 class Spot:
     def __init__(self, path):
         self.path = path
@@ -45,8 +38,22 @@ class Spot:
         self.deck = deck
         self._reset()
 
-def duel(a, b):
-    if duel_decks(a.deck, b.deck):
+    def __repr__(self):
+        return "%s: %i/%i" % (self.path, self.wins, self.losses)
+
+def duel(deck1, deck2):
+    write_deck("first.dec", deck1.deck)
+    write_deck("second.dec", deck2.deck)
+    try:
+        output = subprocess.check_output(["sh", "duel.sh", "first.dec", "second.dec"])
+    except subprocess.CalledProcessError:
+        a.losses += 1
+        b.losses += 1
+        return None
+
+    awins, bwins = output.decode('utf-8').split('\n')[-2].split('\t')[-2:]
+
+    if int(awins) > int(bwins):
         a.wins += 1
         b.losses += 1
         return a
@@ -73,8 +80,20 @@ if __name__ == '__main__':
     while True:
         a, b, c, d = random.sample(spots, 4)
         winner1 = duel(a, b)
-        winner2 = duel(c, d)
 
-        for child in crossover(winner1, winner2):
+        # Don't want to breed decks that crash the AI
+        # This happens when decks contain unimplemented cards mostly
+        if winner1 is None:
+            winner1 = c
+            winner2 = d
+        else:
+            winner2 = duel(c, d)
+            if winner2 is None:
+                winner2 = winner1
+
+        for child in crossover(winner1.deck, winner2.deck):
             mutate(child)
             min(spots, key=winrate).change_deck(child)
+
+        for spot in spots:
+            print(spot)
