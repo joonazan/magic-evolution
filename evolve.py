@@ -65,7 +65,7 @@ def duel(a, b):
 
 def winrate(spot):
     n = spot.wins + spot.losses
-    z = 1.96 # 95 % confidence
+    z = 1.29 # 80% confidence
     phat = 1.0*spot.wins/n
     return (phat + z*z/(2*n) - z * math.sqrt((phat*(1-phat)+z*z/(4*n))/n))/(1+z*z/n)
 
