@@ -74,7 +74,7 @@ def crossover(a, b):
     return list(c), list(d)
 
 def mutate(deck):
-    deck[random.randint(0, len(deck))] = random.choice(cards)
+    deck[random.randint(0, len(deck)-1)] = random.choice(cards)
 
 if __name__ == '__main__':
     while True:
