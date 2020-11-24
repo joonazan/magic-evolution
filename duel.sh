@@ -6,6 +6,6 @@ java -Xms1G -Xmx2G -noverify  -Dcom.sun.management.jmxremote -cp magarena:magare
 -Dgame.log=10.log \
 -Djava.awt.headless=true \
 magic.DeckStrCal \
---ai1 MCTS --str1 1 --deck1 $1 \
---ai2 MCTS --str2 1 --deck2 $2 \
+--ai1 MMABFast --str1 1 --deck1 $1 \
+--ai2 MMABFast --str2 1 --deck2 $2 \
 --games 1
