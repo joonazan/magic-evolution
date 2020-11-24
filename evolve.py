@@ -1,4 +1,4 @@
-import itertools, subprocess, os, os.path, random
+import itertools, subprocess, os, os.path, random, math
 
 def load_set(code):
     with open("magarena/resources/magic/data/sets/%s.txt" % code, "r") as f:
@@ -40,7 +40,7 @@ class Spot:
         self._reset()
 
     def __repr__(self):
-        return "%s: %i/%i" % (self.path, self.wins, self.losses)
+        return "%s: %i/%i -> %f" % (self.path, self.wins, self.losses, winrate(self))
 
 def duel(deck1, deck2):
     write_deck("first.dec", deck1.deck)
@@ -64,7 +64,10 @@ def duel(deck1, deck2):
         return b
 
 def winrate(spot):
-    return spot.wins / (spot.wins + spot.losses)
+    n = spot.wins + spot.losses
+    z = 1.96 # 95 % confidence
+    phat = 1.0*spot.wins/n
+    return (phat + z*z/(2*n) - z * math.sqrt((phat*(1-phat)+z*z/(4*n))/n))/(1+z*z/n)
 
 def crossover(a, b):
     return [x if random.random() < 0.5 else y for x, y in zip(a, b)]
