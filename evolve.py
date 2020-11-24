@@ -67,8 +67,7 @@ def winrate(spot):
     return spot.wins / (spot.wins + spot.losses)
 
 def crossover(a, b):
-    c, d = zip(*((y, x) if random.random() < 0.5 else (x, y) for x, y in zip(a, b)))
-    return list(c), list(d)
+    return [x if random.random() < 0.5 else y for x, y in zip(a, b)]
 
 def mutate(deck):
     deck[random.randint(0, len(deck)-1)] = random.choice(cards)
@@ -93,9 +92,9 @@ if __name__ == '__main__':
             if winner2 is None:
                 winner2 = winner1
 
-        for child in crossover(winner1.deck, winner2.deck):
-            mutate(child)
-            min(spots, key=winrate).change_deck(child)
+        child = crossover(winner1.deck, winner2.deck)
+        mutate(child)
+        min(spots, key=winrate).change_deck(child)
 
         for spot in spots:
             print(spot)
