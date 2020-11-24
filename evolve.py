@@ -42,9 +42,9 @@ class Spot:
     def __repr__(self):
         return "%s: %i/%i -> %f" % (self.path, self.wins, self.losses, winrate(self))
 
-def duel(deck1, deck2):
-    write_deck("first.dec", deck1.deck)
-    write_deck("second.dec", deck2.deck)
+def duel(a, b):
+    write_deck("first.dec", a.deck)
+    write_deck("second.dec", b.deck)
     try:
         output = subprocess.check_output(["sh", "duel.sh", "first.dec", "second.dec"])
     except subprocess.CalledProcessError:
