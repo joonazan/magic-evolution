@@ -14,7 +14,8 @@ def make_population():
     for i, l in enumerate(basic_lands):
         n = 2
         for j in range(n):
-            save_deck(os.path.join(POPFOLDER, "%i.dec" % (i * n + j)), [l] * 40)
+            with open(os.path.join(POPFOLDER, "%i" % (i * n + j)), "w") as f:
+                f.write('\n'.join([l] * 40))
 
 def write_deck(path, deck):
     with open(path, 'w') as f:
@@ -65,10 +66,6 @@ def duel(deck1, deck2):
 def winrate(spot):
     return spot.wins / (spot.wins + spot.losses)
 
-spots = list(map(lambda x: Spot(os.path.join(POPFOLDER, x)), os.listdir(POPFOLDER)))
-
-cards = cardlist('M19')
-
 def crossover(a, b):
     c, d = zip(*((y, x) if random.random() < 0.5 else (x, y) for x, y in zip(a, b)))
     return list(c), list(d)
@@ -77,6 +74,11 @@ def mutate(deck):
     deck[random.randint(0, len(deck)-1)] = random.choice(cards)
 
 if __name__ == '__main__':
+
+    spots = list(map(lambda x: Spot(os.path.join(POPFOLDER, x)), os.listdir(POPFOLDER)))
+
+    cards = cardlist('M10')
+
     while True:
         a, b, c, d = random.sample(spots, 4)
         winner1 = duel(a, b)
