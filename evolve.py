@@ -44,10 +44,14 @@ class Spot:
         return "%s: %i/%i -> %f" % (self.path, self.wins, self.losses, winrate(self))
 
 def duel(a, b):
-    write_deck("first.dec", a.deck)
-    write_deck("second.dec", b.deck)
+    deckfolder = "magarena/release/Magarena/decks/prebuilt"
+    file1 = os.path.join(deckfolder, "first.dec")
+    file2 = os.path.join(deckfolder, "second.dec")
+
+    write_deck(file1, a.deck)
+    write_deck(file2, b.deck)
     try:
-        output = subprocess.check_output(["sh", "duel.sh", "first.dec", "second.dec"])
+        output = subprocess.check_output(["sh", "duel.sh", file1, file2])
     except subprocess.CalledProcessError:
         a.losses += 1
         b.losses += 1
