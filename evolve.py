@@ -1,4 +1,5 @@
 import itertools, subprocess, os, os.path, random, math
+from collections import Counter
 
 def load_set(code):
     with open("magarena/resources/magic/data/sets/%s.txt" % code, "r") as f:
@@ -75,14 +76,29 @@ def crossover(a, b):
 def mutate(deck):
     deck[random.randint(0, len(deck)-1)] = random.choice(cards)
 
+def similarity(a, b):
+    c = Counter(a.deck)
+    for k, v in Counter(b.deck).items():
+        c[k] -= 1
+
+    return sum(map(abs, c.values()))
+
 if __name__ == '__main__':
 
-    spots = list(map(lambda x: Spot(os.path.join(POPFOLDER, x)), os.listdir(POPFOLDER)))
+    spots = list(map(lambda x: Spot(os.path.join(POPFOLDER, x)), sorted(os.listdir(POPFOLDER))))
 
     cards = cardlist('M10')
 
     while True:
         a, b, c, d = random.sample(spots, 4)
+
+        # pair up a and the most similar one to promote diversity
+        # their collective W/L will not improve because only one can win
+        if similarity(a, c) < similarity(a, d):
+            c, d = d, c
+        if similarity(a, b) < similarity(a, c):
+            b, c = c, b
+
         winner1 = duel(a, b)
 
         # Don't want to breed decks that crash the AI
