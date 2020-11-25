@@ -85,7 +85,7 @@ def similarity(a, b):
     for k, v in Counter(b.deck).items():
         c[k] -= 1
 
-    return sum(map(abs, c.values()))
+    return -sum(map(abs, c.values()))
 
 if __name__ == '__main__':
 
